@@ -12,8 +12,8 @@ On Android, add the following to the end of your `android/app/build.gradle`
 
 ```groovy
 project.afterEvaluate {
-    apply from: '../../node_modules/react-native-zss-rich-text-editor/htmlCopy.gradle';
-    copyEditorHtmlToAppAssets(file('../../node_modules/react-native-zss-rich-text-editor'))
+    apply from: '../../node_modules/kienlv58-react-native-zss-rich-text-editor/htmlCopy.gradle';
+    copyEditorHtmlToAppAssets(file('../../node_modules/kienlv58-react-native-zss-rich-text-editor'))
 }
 ```
 
@@ -22,7 +22,7 @@ Also, follow instructions [here](https://github.com/alinz/react-native-webview-b
 
 ## Usage
 
-`react-native-zss-rich-text-editor` exports two Components and one const dictionary:
+`kienlv58-react-native-zss-rich-text-editor` exports two Components and one const dictionary:
 
 ## `RichTextEditor`
 
