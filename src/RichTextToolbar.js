@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {ListView, View, TouchableOpacity, Image, StyleSheet} from 'react-native';
-import {actions} from './const';
+import { FlatList, View, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { actions } from './const';
 
 const defaultActions = [
   // actions.insertImage,
@@ -9,7 +9,7 @@ const defaultActions = [
   actions.setItalic,
   actions.insertBulletsList,
   actions.insertOrderedList,
-  actions.insertLink
+  actions.insertLink,
 ];
 
 function getDefaultIcon() {
@@ -23,9 +23,7 @@ function getDefaultIcon() {
   return texts;
 }
 
-
 export default class RichTextToolbar extends Component {
-
   static propTypes = {
     getEditor: PropTypes.func.isRequired,
     actions: PropTypes.array,
@@ -46,20 +44,23 @@ export default class RichTextToolbar extends Component {
       editor: undefined,
       selectedItems: [],
       actions,
-      ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows(this.getRows(actions, []))
+      // ds: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }).cloneWithRows(this.getRows(actions, [])),
+      ds: this.getRows(actions, []),
     };
   }
 
-  componentDidReceiveProps(newProps) {
+  componentWillReceiveProps(newProps) {
     const actions = newProps.actions ? newProps.actions : defaultActions;
     this.setState({
       actions,
-      ds: this.state.ds.cloneWithRows(this.getRows(actions, this.state.selectedItems))
+      ds: this.getRows(actions, this.state.selectedItems),
     });
   }
 
   getRows(actions, selectedItems) {
-    return actions.map((action) => {return {action, selected: selectedItems.includes(action)};});
+    return actions.map(action => {
+      return { action, selected: selectedItems.includes(action) };
+    });
   }
 
   componentDidMount() {
@@ -67,8 +68,8 @@ export default class RichTextToolbar extends Component {
     if (!editor) {
       throw new Error('Toolbar has no editor!');
     } else {
-      editor.registerToolbar((selectedItems) => this.setSelectedItems(selectedItems));
-      this.setState({editor});
+      editor.registerToolbar(selectedItems => this.setSelectedItems(selectedItems));
+      this.setState({ editor });
     }
   }
 
@@ -76,7 +77,7 @@ export default class RichTextToolbar extends Component {
     if (selectedItems !== this.state.selectedItems) {
       this.setState({
         selectedItems,
-        ds: this.state.ds.cloneWithRows(this.getRows(this.state.actions, selectedItems))
+        ds: this.getRows(this.state.actions, selectedItems),
       });
     }
   }
@@ -92,7 +93,7 @@ export default class RichTextToolbar extends Component {
   _getButtonIcon(action) {
     if (this.props.iconMap && this.props.iconMap[action]) {
       return this.props.iconMap[action];
-    } else if (getDefaultIcon()[action]){
+    } else if (getDefaultIcon()[action]) {
       return getDefaultIcon()[action];
     } else {
       return undefined;
@@ -105,39 +106,40 @@ export default class RichTextToolbar extends Component {
       <TouchableOpacity
         key={action}
         style={[
-          {height: 50, width: 50, justifyContent: 'center'},
-          selected ? this._getButtonSelectedStyle() : this._getButtonUnselectedStyle()
+          { height: 50, width: 50, justifyContent: 'center' },
+          selected ? this._getButtonSelectedStyle() : this._getButtonUnselectedStyle(),
         ]}
         onPress={() => this._onPress(action)}
       >
-        {icon ? <Image source={icon} style={{tintColor: selected ? this.props.selectedIconTint : this.props.iconTint}}/> : null}
+        {icon ? (
+          <Image source={icon} style={{ tintColor: selected ? this.props.selectedIconTint : this.props.iconTint }} />
+        ) : null}
       </TouchableOpacity>
     );
   }
 
   _renderAction(action, selected) {
-    return this.props.renderAction ?
-      this.props.renderAction(action, selected) :
-      this._defaultRenderAction(action, selected);
+    return this.props.renderAction
+      ? this.props.renderAction(action, selected)
+      : this._defaultRenderAction(action, selected);
   }
-
   render() {
     return (
-      <View
-        style={[{height: 50, backgroundColor: '#D3D3D3', alignItems: 'center'}, this.props.style]}
-      >
-        <ListView
+      <View style={[{ height: 50, backgroundColor: '#D3D3D3', alignItems: 'center' }, this.props.style]}>
+        <FlatList
           horizontal
-          contentContainerStyle={{flexDirection: 'row'}}
-          dataSource={this.state.ds}
-          renderRow= {(row) => this._renderAction(row.action, row.selected)}
+          contentContainerStyle={{ flexDirection: 'row' }}
+          data={this.state.ds}
+          extraData={this.state.ds}
+          renderItem={({ item }) => this._renderAction(item.action, item.selected)}
+          keyExtractor={(item, index) => index.toString()}
         />
       </View>
     );
   }
 
   _onPress(action) {
-    switch(action) {
+    switch (action) {
       case actions.setBold:
       case actions.setItalic:
       case actions.insertBulletsList:
@@ -165,7 +167,7 @@ export default class RichTextToolbar extends Component {
         break;
       case actions.insertLink:
         this.state.editor.prepareInsert();
-        if(this.props.onPressAddLink) {
+        if (this.props.onPressAddLink) {
           this.props.onPressAddLink();
         } else {
           this.state.editor.getSelectedText().then(selectedText => {
@@ -175,7 +177,7 @@ export default class RichTextToolbar extends Component {
         break;
       case actions.insertImage:
         this.state.editor.prepareInsert();
-        if(this.props.onPressAddImage) {
+        if (this.props.onPressAddImage) {
           this.props.onPressAddImage();
         }
         break;
@@ -186,7 +188,7 @@ export default class RichTextToolbar extends Component {
 
 const styles = StyleSheet.create({
   defaultSelectedButton: {
-    backgroundColor: 'red'
+    backgroundColor: 'red',
   },
-  defaultUnselectedButton: {}
+  defaultUnselectedButton: {},
 });
