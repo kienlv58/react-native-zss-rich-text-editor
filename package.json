@@ -4,12 +4,12 @@
     "type": "git",
     "url": "https://github.com/kienlv58/react-native-zss-rich-text-editor.git"
   },
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "React Native Wrapper for ZSSRichTextEditor fork and update by kienlv58",
   "main": "index.js",
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "react-native-webview-bridge-updated": "^1.0.0"
+    "react-native-webview-bridge-updated": "ATranDev/react-native-webview-bridge"
   },
   "peerDependencies": {
     "react": "*",
